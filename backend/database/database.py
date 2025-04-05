@@ -42,5 +42,15 @@ class Database:
         return res.fetchall()
 
     def add_message(self, id, sender_id, receiver_id, message, key, status):
+        timestamp = datetime.now()
         self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?, ?, ?)",
-                            (id, sender_id, receiver_id, message, key, datetime.now(), status))
+                            (id, sender_id, receiver_id, message, key, timestamp, status))
+        return timestamp
+
+    def get_message(self, id):
+        res = (self.cursor.execute("SELECT * FROM messages WHERE id=?", (id,)))
+        return res.fetchone()
+
+    def get_all_messages(self):
+        res = self.cursor.execute("SELECT * FROM messages")
+        return res.fetchall()
