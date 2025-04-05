@@ -11,7 +11,7 @@ class Database:
         res = self.cursor.execute("SELECT * FROM sqlite_master WHERE name='users'")
         if res.fetchone() is None:
             self.cursor.execute("CREATE TABLE users("
-                                "id SERIAL PRIMARY KEY, "
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                                 "username TEXT NOT NULL, "
                                 "password TEXT NOT NULL, "
                                 "first_name TEXT NOT NULL, "
@@ -21,7 +21,7 @@ class Database:
         res = self.cursor.execute("SELECT * FROM sqlite_master WHERE name='messages'")
         if res.fetchone() is None:
             self.cursor.execute("CREATE TABLE messages("
-                                "id SERIAL PRIMARY KEY, "
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                                 "sender_id INTEGER REFERENCES users(id), "
                                 "receiver_id INTEGER REFERENCES users(id), "
                                 "message TEXT NOT NULL, "
@@ -32,6 +32,7 @@ class Database:
     def add_user(self, id, username, password, first_name, last_name, email):
         self.cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)",
                             (id, username, password, first_name, last_name, email))
+        self.connection.commit()
 
     def get_user(self, id):
         res = self.cursor.execute("SELECT * FROM users WHERE id=?", (id,))
@@ -45,6 +46,7 @@ class Database:
         timestamp = datetime.now()
         self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?, ?, ?)",
                             (id, sender_id, receiver_id, message, key, timestamp, status))
+        self.connection.commit()
         return timestamp
 
     def get_message(self, id):

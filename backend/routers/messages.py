@@ -31,7 +31,7 @@ class MessageDTO(BaseModel):
 @router.post('/messages', response_model=MessageDTO, status_code=status.HTTP_201_CREATED)
 async def create_message(message: Message):
     try:
-        ts = database.add_message(message.id, message.sender_id, message.receiver_id, message.message, message.key, message.status)
+        ts = database.add_message(None, message.sender_id, message.receiver_id, message.message, message.key, message.status)
         return MessageDTO(id=message.id, sender_id=message.sender_id, receiver_id=message.receiver_id, message=message.message, key=message.key, timestamp=ts, status=message.status)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

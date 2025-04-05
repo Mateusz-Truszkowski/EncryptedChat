@@ -29,7 +29,7 @@ class UserDTO(BaseModel):
 @router.post('/users', status_code=status.HTTP_201_CREATED)
 async def create_user(user: User):
     try:
-        database.add_user(user.id, user.username, user.password, user.first_name, user.last_name, user.email)
+        database.add_user(None, user.username, user.password, user.first_name, user.last_name, user.email)
         return user
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
