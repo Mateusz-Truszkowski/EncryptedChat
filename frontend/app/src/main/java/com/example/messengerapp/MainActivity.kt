@@ -32,8 +32,25 @@ class MainActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
+            val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
+            val editor = sharedPref.edit()
 
             Log.i("Test Credentials", "Username : $username and Password : $password")
+            val userLogin = UserLogin(
+                username = username,
+                password = password,
+            )
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val token = RetrofitClient.apiService.loginUser(userLogin).toString()
+                    editor.putString("auth_token", token)
+                    editor.apply()
+                    Log.i("API SUCCESS", "Logged in as: $token")
+                } catch (e: Exception) {
+                    Log.e("API ERROR", "Failed to log in: ${e.message}")
+                }
+            }
         }
 
         registerBtn.setOnClickListener {
