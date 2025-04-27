@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Database:
     def __init__(self, database_path):
-        self.connection = sqlite3.connect(database_path)
+        self.connection = sqlite3.connect(database_path, check_same_thread=False)
         self.cursor = self.connection.cursor()
 
     def create_tables(self):
@@ -36,6 +36,10 @@ class Database:
 
     def get_user(self, id):
         res = self.cursor.execute("SELECT * FROM users WHERE id=?", (id,))
+        return res.fetchone()
+
+    def get_user_by_username(self, username):
+        res = self.cursor.execute("SELECT * FROM users WHERE username=?", (username,))
         return res.fetchone()
 
     def get_all_users(self):
