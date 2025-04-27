@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.logging.interceptor)
     implementation(libs.retrofit)
     implementation (libs.converter.gson)
     implementation(libs.kotlinx.coroutines.android)

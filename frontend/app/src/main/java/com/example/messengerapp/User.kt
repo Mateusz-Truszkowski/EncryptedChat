@@ -11,5 +11,5 @@ data class User(
 
 data class UserLogin(
     val username: String,
-    val password: String,
+    val password: String
 )

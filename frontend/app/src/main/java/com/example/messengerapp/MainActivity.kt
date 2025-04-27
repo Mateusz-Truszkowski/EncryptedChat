@@ -38,12 +38,12 @@ class MainActivity : AppCompatActivity() {
             Log.i("Test Credentials", "Username : $username and Password : $password")
             val userLogin = UserLogin(
                 username = username,
-                password = password,
+                password = password
             )
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val token = RetrofitClient.apiService.loginUser(userLogin).toString()
+                    val token = RetrofitClient.apiService.loginUser(userLogin)
                     editor.putString("auth_token", token)
                     editor.apply()
                     Log.i("API SUCCESS", "Logged in as: $token")

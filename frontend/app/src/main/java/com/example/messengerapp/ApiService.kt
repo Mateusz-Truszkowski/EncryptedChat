@@ -8,5 +8,5 @@ interface ApiService {
     suspend fun createUser(@Body user: User): User
 
     @POST("/login")
-    suspend fun loginUser(@Body user: UserLogin): UserLogin
+    suspend fun loginUser(@Body user: UserLogin): String
 }
