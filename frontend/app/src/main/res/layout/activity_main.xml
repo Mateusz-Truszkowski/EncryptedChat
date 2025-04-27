@@ -57,5 +57,16 @@
             android:layout_marginTop="32dp"
             android:textSize="20sp"
             android:id="@+id/login_btn" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:text="@string/register"
+            android:textColor="@color/white"
+            android:padding="5dp"
+            android:background="@drawable/rounded_corner"
+            android:layout_marginTop="20dp"
+            android:id="@+id/register_btn" />
     </LinearLayout>
+
 </RelativeLayout>
