@@ -1,5 +1,6 @@
 package com.example.messengerapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -61,6 +62,8 @@ class RegisterActivity : AppCompatActivity() {
                     editor.putString("auth_token", token)
                     editor.apply()
                     Log.i("API SUCCESS", "Logged in as: $token")
+                    val intent = Intent(this@RegisterActivity, ChatListActivity::class.java)
+                    startActivity(intent)
                 } catch (e: Exception) {
                     Log.e("API ERROR", "Failed to create user/log in: ${e.message}")
                 }

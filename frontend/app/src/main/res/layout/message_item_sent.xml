@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="end"> <!-- To sprawi, że cały zawartość LinearLayout będzie wyrównana do prawej -->
+
+    <TextView
+        android:id="@+id/message_text_sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/message_bubble_sent"
+        android:padding="8dp"
+        android:textColor="#fff"
+        android:layout_marginTop="10dp"
+        android:text="Wiadomość" />
+</LinearLayout>

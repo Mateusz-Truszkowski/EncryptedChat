@@ -22,7 +22,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        val token = sharedPref.getString("auth_token", null)
+
+        if (token != null) {
+            val intent = Intent(this, ChatListActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            setContentView(R.layout.activity_main)
+        }
 
         usernameInput = findViewById(R.id.username_input)
         passwordInput = findViewById(R.id.password_input)
@@ -32,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
-            val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
             val editor = sharedPref.edit()
 
             Log.i("Test Credentials", "Username : $username and Password : $password")
@@ -43,10 +52,12 @@ class MainActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val token = RetrofitClient.apiService.loginUser(userLogin)
-                    editor.putString("auth_token", token)
+                    val tokenReceived = RetrofitClient.apiService.loginUser(userLogin)
+                    editor.putString("auth_token", tokenReceived)
                     editor.apply()
-                    Log.i("API SUCCESS", "Logged in as: $token")
+                    Log.i("API SUCCESS", "Logged in as: $tokenReceived")
+                    val intent = Intent(this@MainActivity, ChatListActivity::class.java)
+                    startActivity(intent)
                 } catch (e: Exception) {
                     Log.e("API ERROR", "Failed to log in: ${e.message}")
                 }
