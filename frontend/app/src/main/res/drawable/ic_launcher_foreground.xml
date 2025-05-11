@@ -1,28 +1,28 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="48dp"
-    android:height="48dp"
+    android:width="24dp"
+    android:height="30dp"
     android:viewportWidth="48"
     android:viewportHeight="48">
 
-    <!-- Dymek czatu z gradientem -->
+    <!-- Mniejszy i niżej przesunięty dymek czatu -->
     <path
         android:name="bubble"
         android:fillType="nonZero"
-        android:pathData="M4,10c0,-3.3 2.7,-6 6,-6h28c3.3,0 6,2.7 6,6v18c0,3.3 -2.7,6 -6,6H16l-6,6v-6H10c-3.3,0 -6,-2.7 -6,-6z">
+        android:pathData="M10,17c0,-2 1.5,-3.5 3.5,-3.5h21c2,0 3.5,1.5 3.5,3.5v10c0,2 -1.5,3.5 -3.5,3.5H22l-4,4v-4h-4.5c-2,0 -3.5,-1.5 -3.5,-3.5z">
         <aapt:attr name="android:fillColor">
             <gradient
                 android:type="linear"
                 android:startX="0"
                 android:startY="0"
-                android:endX="48"
-                android:endY="48"
+                android:endX="24"
+                android:endY="24"
                 android:startColor="#054BB3"
                 android:endColor="#00D9FF"/>
         </aapt:attr>
     </path>
 
-    <!-- Trzy kropki -->
+    <!-- Trzy kropki (pozostają bez zmian) -->
     <path
         android:pathData="M17,22a2,2 0 1,0 0.01,0z"
         android:fillColor="#FFFFFF"/>
