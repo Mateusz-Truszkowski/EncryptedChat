@@ -4,7 +4,9 @@ import com.chat.backend.domain.dto.UserDto;
 import com.chat.backend.domain.entities.UserEntity;
 import com.chat.backend.mappers.Mapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserMapperImpl implements Mapper<UserEntity, UserDto> {
 
     private final ModelMapper modelMapper;

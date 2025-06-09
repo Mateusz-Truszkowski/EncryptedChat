@@ -4,7 +4,9 @@ import com.chat.backend.domain.dto.GroupDto;
 import com.chat.backend.domain.entities.GroupEntity;
 import com.chat.backend.mappers.Mapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GroupMapperImpl implements Mapper<GroupEntity, GroupDto> {
 
     private final ModelMapper modelMapper;
