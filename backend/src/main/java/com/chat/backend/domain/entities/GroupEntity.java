@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 @Entity
-@Table(name = "sprints")
+@Table(name = "groups")
 public class GroupEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_id_seq")
