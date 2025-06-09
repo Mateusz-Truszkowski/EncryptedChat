@@ -25,7 +25,6 @@ public class MessageEntity {
     @JoinColumn(name = "sender_id")
     private UserEntity sender;
     private String content;
-    private String encryption_key;
     private LocalDateTime sent_at;
     private String attachment;
     private String status;
