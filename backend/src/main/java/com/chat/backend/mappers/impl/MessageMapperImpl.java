@@ -4,7 +4,9 @@ import com.chat.backend.domain.dto.MessageDto;
 import com.chat.backend.domain.entities.MessageEntity;
 import com.chat.backend.mappers.Mapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MessageMapperImpl implements Mapper<MessageEntity, MessageDto> {
 
     private final ModelMapper modelMapper;
