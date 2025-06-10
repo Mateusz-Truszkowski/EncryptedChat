@@ -2,10 +2,7 @@ package com.chat.backend.controllers;
 
 import com.chat.backend.domain.dto.GroupDto;
 import com.chat.backend.services.GroupService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,7 +21,7 @@ public class GroupController {
     }
 
     @PostMapping(path = "/groups")
-    public GroupDto createGroup(@RequestBody GroupDto dto) {
+    public GroupDto createGroup(@RequestBody GroupDto dto, @RequestHeader (name = "Authorization") String token) {
         return service.createGroup(dto);
     }
 }
