@@ -1,13 +1,11 @@
 package com.chat.backend.domain.dto;
 
-import com.chat.backend.domain.entities.GroupEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,5 +17,4 @@ public class UserDto {
     private String password;
     private String role;
     private LocalDateTime last_activity;
-    private Set<GroupEntity> groups;
 }

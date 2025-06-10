@@ -7,5 +7,5 @@ import java.util.List;
 public interface GroupService {
     List<GroupDto> getAllGroups();
 
-    GroupDto createGroup(GroupDto dto);
+    GroupDto createGroup(GroupDto dto, String creatorUsername);
 }
