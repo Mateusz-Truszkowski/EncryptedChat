@@ -23,6 +23,11 @@ public class MessageController {
         return service.getMessages(pageable);
     }
 
+    @GetMapping(path = "/messages/{group_id}")
+    public Page<MessageDto> getMessagesByGroupId(@PathVariable Integer group_id, Pageable pageable) {
+        return service.getMessagesByGroup(pageable, group_id);
+    }
+
     @PostMapping(path = "/messages")
     public MessageDto sendMessage(@RequestBody MessageDto messageDto, @RequestHeader (name = "Authorization") String token) {
         token = token.substring(7);

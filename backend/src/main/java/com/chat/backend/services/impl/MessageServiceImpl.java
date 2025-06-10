@@ -44,4 +44,9 @@ public class MessageServiceImpl implements MessageService {
     public Page<MessageDto> getMessages(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::mapTo);
     }
+
+    @Override
+    public Page<MessageDto> getMessagesByGroup(Pageable pageable, Integer groupId) {
+        return repository.findByGroup_Id(groupId, pageable).map(mapper::mapTo);
+    }
 }
