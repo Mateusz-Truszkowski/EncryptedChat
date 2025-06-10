@@ -20,5 +20,6 @@ public class UserEntity {
     private Integer id;
     private String username;
     private String password;
+    private String role;
     private LocalDateTime last_activity;
 }

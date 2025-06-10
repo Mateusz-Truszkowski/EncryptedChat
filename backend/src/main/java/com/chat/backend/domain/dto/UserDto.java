@@ -17,6 +17,7 @@ public class UserDto {
     private Integer id;
     private String username;
     private String password;
+    private String role;
     private LocalDateTime last_activity;
     private Set<GroupEntity> groups;
 }
