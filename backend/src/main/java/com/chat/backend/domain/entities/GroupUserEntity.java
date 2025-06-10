@@ -18,6 +18,6 @@ public class GroupUserEntity {
     private Integer id;
     @ManyToOne(cascade = CascadeType.MERGE)
     private UserEntity user;
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     private GroupEntity group;
 }

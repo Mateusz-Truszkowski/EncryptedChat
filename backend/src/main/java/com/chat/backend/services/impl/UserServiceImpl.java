@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -35,5 +36,15 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getAllUsers() {
         List<UserEntity> users = StreamSupport.stream(repository.findAll().spliterator(), false).toList();
         return users.stream().map(mapper::mapTo).toList();
+    }
+
+    @Override
+    public Optional<UserDto> getUserByUsername(String username) {
+        return repository.findUserByUsername(username).map(mapper::mapTo);
+    }
+
+    @Override
+    public Optional<UserEntity> getUserEntityByUsername(String username) {
+        return repository.findUserByUsername(username);
     }
 }
