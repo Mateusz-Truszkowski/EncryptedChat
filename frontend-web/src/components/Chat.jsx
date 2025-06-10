@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { login, getGroups, getGroupMessages, sendGroupMessage } from "../hooks/fetches"
+import { login, getGroups, getGroupMessages, addUserToGroup, addNewGroup } from "../hooks/fetches"
+import { connectToChat, sendMessageToGroup, disconnectFromChat } from '../hooks/chat';
 import "../assets/Chat.css"
 
 function Chat() {
@@ -23,6 +24,7 @@ function Chat() {
 
     const logout = () => {
         localStorage.setItem('token', '');
+        disconnectFromChat();
         window.location.reload();
     }
 
@@ -39,16 +41,44 @@ function Chat() {
         setMessages(msgs);
     }
 
-    const handleSendMessage = async (e) => {
-        const content = document.getElementById('message_input').value;
+    const handleAddUserToGroup = async () => {
         const currentGroupId = activeUsers.findIndex(contact => selectedContact == contact) + 1;
-        const response = await sendGroupMessage(currentGroupId, content);
-        updateMessages(selectedContact);
+        const userToAdd = document.getElementById("search_user_input").value;
+        await addUserToGroup(currentGroupId, userToAdd);
+    }
+
+    const handleAddNewGroup = async () => {
+        const userToAdd = document.getElementById("search_user_input").value;
+        await addNewGroup("Czat z: " + userToAdd, userToAdd);
+        window.location.reload();
     }
 
     useEffect(() => {
         updateGroups();
     }, []);
+
+    useEffect(() => {
+        if (!selectedContact) return;
+
+        const currentGroupId = activeUsers.findIndex(contact => selectedContact === contact) + 1;
+        disconnectFromChat();
+
+        connectToChat(currentGroupId, (msg) => {
+            setMessages((prev) => [...prev, msg]);
+        });
+
+        return () => {
+            disconnectFromChat();
+        };
+    }, [selectedContact]);
+
+    const handleSend = () => {
+        const currentGroupId = activeUsers.findIndex(contact => selectedContact === contact) + 1;
+        const content = document.getElementById('message_input').value;
+        if (content.trim() !== '') {
+            sendMessageToGroup(content, currentGroupId);
+        }
+    };
 
     return (
         <>
@@ -64,6 +94,12 @@ function Chat() {
               </div>
             </> : 
             <>
+              <div id="chat_wrapper">
+                <div id="chat_topbar">
+                  <input type="text" placeholder="Wpisz nazwę użytkownika..." id="search_user_input"/>
+                  <button onClick={() => handleAddUserToGroup()}>Dodaj do czatu</button>
+                  <button onClick={() => handleAddNewGroup()}>Utwórz nowy czat</button>
+                </div>
               <div id="chat_app">
                 <div id="contacts">
                   <h3>Kontakty</h3>
@@ -103,9 +139,10 @@ function Chat() {
                   id='message_input'
                   onChange={(e) => setMessage(e.target.value)}
                 />
-                <button onClick={handleSendMessage}>Wyślij</button>
+                <button onClick={handleSend}>Wyślij</button>
               </div>
             </div>
+          </div>
           </div>
           <button className="logout-button" onClick={logout}>Wyloguj się</button>
             </>}

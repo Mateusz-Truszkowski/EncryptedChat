@@ -18,11 +18,9 @@ body {
 
 #chat_app {
   display: flex;
-  height: 90vh;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+  flex: 1;
+  height: calc(100% - 50px);
   overflow: hidden;
-  background-color: var(--panel-color);
 }
 
 #contacts {
@@ -162,4 +160,40 @@ body {
 
 .login-box button:hover {
   background-color: #555580;
+}
+
+#chat_topbar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 10px;
+  background-color: var(--accent-color);
+  border-bottom: 1px solid #333;
+}
+
+#chat_topbar input {
+  flex: 1;
+  padding: 6px;
+  background-color: var(--bg-color);
+  border: 1px solid #444;
+  color: white;
+}
+
+#chat_topbar button {
+  background-color: var(--bg-color);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#chat_topbar button:hover {
+  background-color: #505050;
+}
+
+#chat_wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  border-radius: 15px;
 }
