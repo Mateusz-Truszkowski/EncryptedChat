@@ -8,4 +8,6 @@ public interface MessageService {
     MessageDto sendMessage(MessageDto messageDto, String senderUsername);
 
     Page<MessageDto> getMessages(Pageable pageable);
+
+    Page<MessageDto> getMessagesByGroup(Pageable pageable, Integer groupId);
 }
