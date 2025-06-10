@@ -30,8 +30,9 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
+        byte[] secret = SECRET_KEY.getBytes();
         return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -42,12 +43,13 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
+        byte[] secret = SECRET_KEY.getBytes();
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
