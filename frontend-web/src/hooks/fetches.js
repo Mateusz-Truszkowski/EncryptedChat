@@ -12,7 +12,6 @@ export async function login(username, password) {
       throw new Error('Błędne dane logowania');
     }
 
-    // Tu jest różnica: odbieramy token jako tekst
     const token = await response.text();
 
     if (token) {
@@ -88,5 +87,63 @@ export async function sendGroupMessage(groupId, messageContent) {
     } catch {
         console.error('Błąd wysyłania wiadomości:', error.message);
         return { success: false, message: error.message };
+    }
+}
+
+export async function addUserToGroup(groupId, userToAdd) {
+    try {
+        const response = await fetch(`http://localhost:8080/groups/${groupId}/add_user`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ username: userToAdd }),
+        });
+
+        if (!response.ok) {
+                throw new Error('Nie udało się dodać użytkownika');
+        }
+    
+        return response.text();
+    } catch {
+        console.error('Błąd w trakcie dodawania użytkownika:', error.message);
+        return { success: false, message: error.message };
+    }
+}
+
+export async function addNewGroup(groupName, userToAdd) {
+    try {
+        let response = await fetch(`http://localhost:8080/groups`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ name: groupName }),
+        });
+
+        if (!response.ok) {
+                throw new Error('Nie udało się utworzyć grupy');
+        }
+
+        const responseJson = await response.json();
+
+        response = await fetch(`http://localhost:8080/groups/${responseJson.id}/add_user`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ username: userToAdd }),
+        });
+
+        if (!response.ok) {
+                throw new Error('Nie udało się dodać użytkownika');
+        }
+
+    } catch (error) {
+        console.error('Błąd w trakcie dodawania grupy lub użytkownika:', error.message);
+        return { success: false, message: error.message };  
     }
 }

@@ -20,4 +20,5 @@ public class GroupUserEntity {
     private UserEntity user;
     @ManyToOne(cascade = CascadeType.ALL)
     private GroupEntity group;
+    private String role;
 }
