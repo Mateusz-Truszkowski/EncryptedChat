@@ -6,10 +6,12 @@ import com.chat.backend.security.JwtUtil;
 import com.chat.backend.services.GroupService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@PreAuthorize("hasAnyRole('admin', 'user')")
 @RestController
 public class GroupController {
 

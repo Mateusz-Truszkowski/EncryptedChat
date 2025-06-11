@@ -12,6 +12,7 @@ import com.chat.backend.services.GroupService;
 import com.chat.backend.services.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -38,12 +39,17 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<GroupDto> getAllGroups(String username) {
         Optional<UserEntity> user = userService.getUserEntityByUsername(username);
+        List<GroupEntity> groups;
 
         if (user.isEmpty()) {
             throw new RuntimeException("User not found");
         }
 
-        List<GroupEntity> groups = StreamSupport.stream(repository.findByUser(user.get()).spliterator(), false).toList();
+        if (user.get().getRole().equals("admin"))
+            groups = StreamSupport.stream(repository.findAll().spliterator(), false).toList();
+        else
+            groups = StreamSupport.stream(repository.findByUser(user.get()).spliterator(), false).toList();
+
         return groups.stream().map(mapper::mapTo).toList();
     }
 

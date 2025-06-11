@@ -120,7 +120,7 @@ function Chat() {
                 </div>
 
                 <div id="current_chat">
-                  <h3>Czat z {selectedContact}</h3>
+                  <h3>{selectedContact}</h3>
                   <div className="messages">
                     {
                         messages.map(msg => 
