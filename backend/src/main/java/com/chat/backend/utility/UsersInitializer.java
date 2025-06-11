@@ -7,19 +7,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AdminInitializer implements CommandLineRunner {
+public class UsersInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UsersInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         boolean adminExists = userRepository.existsByRolesContaining("admin");
+        boolean deletedUserExists = userRepository.existsByUsername("Deleted User [*]");
 
         if (!adminExists) {
             UserEntity admin = new UserEntity();
@@ -29,6 +30,16 @@ public class AdminInitializer implements CommandLineRunner {
 
             userRepository.save(admin);
             System.out.println("Created default admin account");
+        }
+
+        if (!deletedUserExists) {
+            UserEntity deletedUser = new UserEntity();
+            deletedUser.setUsername("Deleted User [*]");
+            deletedUser.setPassword(passwordEncoder.encode("do not enter"));
+            deletedUser.setRole("deleted");
+
+            userRepository.save(deletedUser);
+            System.out.println("Created default deleted user account");
         }
     }
 }

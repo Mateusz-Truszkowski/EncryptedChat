@@ -57,4 +57,9 @@ public class UserServiceImpl implements UserService {
     public Optional<UserEntity> getUserEntityByUsername(String username) {
         return repository.findUserByUsername(username);
     }
+
+    @Override
+    public void deleteById(Integer id) {
+        repository.deleteById(id);
+    }
 }

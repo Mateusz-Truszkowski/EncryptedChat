@@ -8,10 +8,13 @@ import com.chat.backend.repositories.MessageRepository;
 import com.chat.backend.services.MessageService;
 import com.chat.backend.services.UserService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,6 +50,23 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Page<MessageDto> getMessagesByGroup(Pageable pageable, Integer groupId) {
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("sentAt").ascending());
         return repository.findByGroup_Id(groupId, pageable).map(mapper::mapTo);
+    }
+
+    @Override
+    public void deleteByGroupId(Integer groupId) {
+        repository.deleteByGroupId(groupId);
+    }
+
+    @Override
+    public void changeMessagesUserToDeleted(Integer id) {
+        UserEntity deletedUser = userService.getUserEntityByUsername("Deleted User [*]")
+                .orElseThrow(() -> new RuntimeException("Deleted user not found"));
+        List<MessageEntity> messages = repository.findBySenderId(id);
+        for (MessageEntity msg : messages) {
+            msg.setSender(deletedUser);
+        }
+        repository.saveAll(messages);
     }
 }

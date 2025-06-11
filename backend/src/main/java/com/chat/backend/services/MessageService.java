@@ -10,4 +10,8 @@ public interface MessageService {
     Page<MessageDto> getMessages(Pageable pageable);
 
     Page<MessageDto> getMessagesByGroup(Pageable pageable, Integer groupId);
+
+    void deleteByGroupId(Integer groupId);
+
+    void changeMessagesUserToDeleted(Integer id);
 }

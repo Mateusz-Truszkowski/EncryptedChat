@@ -18,7 +18,7 @@ public class GroupUserEntity {
     private Integer id;
     @ManyToOne(cascade = CascadeType.MERGE)
     private UserEntity user;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private GroupEntity group;
     private String role;
 }

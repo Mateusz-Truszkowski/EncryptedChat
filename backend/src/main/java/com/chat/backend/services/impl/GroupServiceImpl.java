@@ -9,10 +9,11 @@ import com.chat.backend.mappers.Mapper;
 import com.chat.backend.repositories.GroupRepository;
 import com.chat.backend.repositories.GroupUserRepository;
 import com.chat.backend.services.GroupService;
+import com.chat.backend.services.MessageService;
 import com.chat.backend.services.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -23,17 +24,17 @@ public class GroupServiceImpl implements GroupService {
     private final GroupRepository repository;
     private final GroupUserRepository groupUserRepository;
     private final Mapper<GroupEntity, GroupDto> mapper;
-    private final Mapper<UserEntity, UserDto> userMapper;
     private final UserService userService;
+    private final MessageService messageService;
 
     public GroupServiceImpl(GroupRepository groupRepository, Mapper<GroupEntity, GroupDto> groupMapper,
                             GroupUserRepository groupUserRepository,UserService userService,
-                            Mapper<UserEntity, UserDto> userMapper) {
+                            MessageService messageService) {
         this.repository = groupRepository;
         this.groupUserRepository = groupUserRepository;
         this.mapper = groupMapper;
-        this.userMapper = userMapper;
         this.userService = userService;
+        this.messageService = messageService;
     }
 
     @Override
@@ -48,7 +49,7 @@ public class GroupServiceImpl implements GroupService {
         if (user.get().getRole().equals("admin"))
             groups = StreamSupport.stream(repository.findAll().spliterator(), false).toList();
         else
-            groups = StreamSupport.stream(repository.findByUser(user.get()).spliterator(), false).toList();
+            groups = repository.findByUser(user.get()).stream().toList();
 
         return groups.stream().map(mapper::mapTo).toList();
     }
@@ -56,16 +57,15 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public GroupDto createGroup(GroupDto dto, String creatorUsername) {
         Optional<UserEntity> user = userService.getUserEntityByUsername(creatorUsername);
-        GroupDto savedGroup = null;
+        GroupDto savedGroup;
         if (user.isEmpty()) {
             throw new RuntimeException("Group created by non existing user!");
         }
         else {
-            GroupUserEntity entity = new GroupUserEntity().builder()
-                    .user(user.get())
-                    .group(mapper.mapFrom(dto))
-                    .role("ADMIN")
-                    .build();
+            GroupUserEntity entity = new GroupUserEntity();
+            entity.setUser(user.get());
+            entity.setGroup(mapper.mapFrom(dto));
+            entity.setRole("ADMIN");
             savedGroup = mapper.mapTo(groupUserRepository.save(entity).getGroup());
         }
         return savedGroup;
@@ -86,12 +86,31 @@ public class GroupServiceImpl implements GroupService {
         }
         GroupEntity group = groupOptional.get();
 
-        GroupUserEntity groupUser = new GroupUserEntity()
-                .builder()
-                .user(userToAdd.get())
-                .group(group)
-                .role("USER")
-                .build();
+        GroupUserEntity groupUser = new GroupUserEntity();
+        groupUser.setUser(userToAdd.get());
+        groupUser.setGroup(group);
+        groupUser.setRole("USER");
         groupUserRepository.save(groupUser);
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteGroup(Integer groupId, String sender) {
+        Optional<UserEntity> user = userService.getUserEntityByUsername(sender);
+        Optional<GroupEntity> groupOptional = repository.findById(groupId);
+
+        if (user.isEmpty() || groupOptional.isEmpty())
+            return false;
+
+        Optional<GroupUserEntity> groupUser = groupUserRepository.findAllByUserAndGroupId(user.get().getId(), groupId);
+
+        if (groupUser.isEmpty() || !groupUser.get().getRole().equals("ADMIN")) {
+            return false;
+        }
+
+        messageService.deleteByGroupId(groupId);
+        groupUserRepository.deleteByGroupId(groupId);
+        repository.deleteById(groupId);
+        return true;
     }
 }

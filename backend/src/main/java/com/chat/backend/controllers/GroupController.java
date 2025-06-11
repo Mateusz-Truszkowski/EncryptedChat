@@ -40,6 +40,16 @@ public class GroupController {
         token = token.substring(7);
         String sender = jwtUtil.extractUsername(token);
         service.addUserToGroup(dto, groupId, sender);
-        return new ResponseEntity<String>("Successfully added new user", HttpStatus.OK);
+        return new ResponseEntity<>("Successfully added new user", HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/groups/{groupId}")
+    public ResponseEntity<String> deleteGroup(@PathVariable Integer groupId, @RequestHeader (name = "Authorization") String token) {
+        token = token.substring(7);
+        String sender = jwtUtil.extractUsername(token);
+        if (service.deleteGroup(groupId, sender))
+            return new ResponseEntity<>("Successfully deleted group", HttpStatus.OK);
+        else
+            return new ResponseEntity<>("Failed to delete group", HttpStatus.FORBIDDEN);
     }
 }

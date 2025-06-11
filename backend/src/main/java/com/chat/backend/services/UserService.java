@@ -14,4 +14,6 @@ public interface UserService {
     Optional<UserDto> getUserByUsername(String username);
 
     Optional<UserEntity> getUserEntityByUsername(String username);
+
+    void deleteById(Integer id);
 }

@@ -30,21 +30,19 @@ function Chat() {
 
     const updateGroups = async (e) => {
         const response = await getGroups();
-        const groups = response.map(group => group.name);
+        const groups = response.map(group => ({ id: group.id, name: group.name }));
         setActiveUsers(groups);
     }
 
-    const updateMessages = async (groupName) => {
-        const currentGroupId = activeUsers.findIndex(contact => groupName == contact) + 1;
-        const response = await getGroupMessages(currentGroupId);
+    const updateMessages = async (groupId) => {
+        const response = await getGroupMessages(groupId);
         const msgs = response.content;
         setMessages(msgs);
     }
 
     const handleAddUserToGroup = async () => {
-        const currentGroupId = activeUsers.findIndex(contact => selectedContact == contact) + 1;
         const userToAdd = document.getElementById("search_user_input").value;
-        await addUserToGroup(currentGroupId, userToAdd);
+        await addUserToGroup(selectedContact.id, userToAdd);
     }
 
     const handleAddNewGroup = async () => {
@@ -60,10 +58,9 @@ function Chat() {
     useEffect(() => {
         if (!selectedContact) return;
 
-        const currentGroupId = activeUsers.findIndex(contact => selectedContact === contact) + 1;
         disconnectFromChat();
 
-        connectToChat(currentGroupId, (msg) => {
+        connectToChat(selectedContact.id, (msg) => {
             setMessages((prev) => [...prev, msg]);
         });
 
@@ -73,11 +70,11 @@ function Chat() {
     }, [selectedContact]);
 
     const handleSend = () => {
-        const currentGroupId = activeUsers.findIndex(contact => selectedContact === contact) + 1;
         const content = document.getElementById('message_input').value;
         if (content.trim() !== '') {
-            sendMessageToGroup(content, currentGroupId);
+            sendMessageToGroup(content, selectedContact.id);
         }
+        document.getElementById('message_input').value = "";
     };
 
     return (
@@ -104,23 +101,23 @@ function Chat() {
                 <div id="contacts">
                   <h3>Kontakty</h3>
                   <ul>
-                    {activeUsers.map((name) => (
+                    {activeUsers.map((group) => (
                     <li
-                      key={name}
-                      className={selectedContact === name ? 'selected' : ''}
+                      key={group.id}
+                      className={selectedContact === group.name ? 'selected' : ''}
                       onClick={() => { 
-                        setSelectedContact(name); 
-                        updateMessages(name);
+                        setSelectedContact(group); 
+                        updateMessages(group.id);
                       }}
                     >
-                      {name}
+                      {group.name}
                     </li>
                     ))}
                   </ul>
                 </div>
 
                 <div id="current_chat">
-                  <h3>{selectedContact}</h3>
+                  <h3>{selectedContact.name}</h3>
                   <div className="messages">
                     {
                         messages.map(msg => 
