@@ -2,7 +2,10 @@ package com.chat.backend.controllers;
 
 import com.chat.backend.domain.dto.UserDto;
 import com.chat.backend.security.JwtUtil;
+import com.chat.backend.services.UserDeletionService;
 import com.chat.backend.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +15,13 @@ import java.util.List;
 public class UserController {
 
     private final UserService service;
+    private final UserDeletionService userDeletionService;
     private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    public UserController(UserService userService, UserDeletionService userDeletionService, JwtUtil jwtUtil) {
         this.service = userService;
         this.jwtUtil = jwtUtil;
+        this.userDeletionService = userDeletionService;
     }
 
     @PreAuthorize("hasAnyRole('admin', 'user')")
@@ -35,5 +40,23 @@ public class UserController {
         }
 
         return service.createUser(user, username);
+    }
+
+    @PreAuthorize("hasAnyRole('admin', 'user')")
+    @DeleteMapping(path = "/users/{username}")
+    public ResponseEntity<String> deleteUser(@PathVariable("username") String username, @RequestHeader(name = "Authorization", required = false) String token) {
+        String sender;
+
+        if (token != null && token.startsWith("Bearer ")) {
+            String jwt = token.substring(7);
+            sender = jwtUtil.extractUsername(jwt);
+        }
+        else
+            return new ResponseEntity<>("Invalid token", HttpStatus.UNAUTHORIZED);
+
+        if (userDeletionService.deleteUserByUsername(username, sender))
+            return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
+        else
+            return new ResponseEntity<>("Cannot delete user", HttpStatus.FORBIDDEN);
     }
 }

@@ -25,7 +25,7 @@ public class MessageEntity {
     @JoinColumn(name = "sender_id")
     private UserEntity sender;
     private String content;
-    private LocalDateTime sent_at;
+    private LocalDateTime sentAt;
     private String attachment;
     private String status;
 }

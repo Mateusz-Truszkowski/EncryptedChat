@@ -12,4 +12,6 @@ public interface UserRepository extends CrudRepository<UserEntity, Integer> {
 
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.role LIKE %:role%")
     boolean existsByRolesContaining(@Param("role") String role);
+
+    boolean existsByUsername(String username);
 }

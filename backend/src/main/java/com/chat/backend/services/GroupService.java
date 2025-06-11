@@ -11,4 +11,6 @@ public interface GroupService {
     GroupDto createGroup(GroupDto dto, String creatorUsername);
 
     void addUserToGroup(UserDto dto, Integer groupId, String sender);
+
+    boolean deleteGroup(Integer groupId, String sender);
 }
