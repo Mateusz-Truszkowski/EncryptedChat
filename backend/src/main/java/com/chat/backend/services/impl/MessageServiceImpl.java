@@ -69,4 +69,21 @@ public class MessageServiceImpl implements MessageService {
         }
         repository.saveAll(messages);
     }
+
+    @Override
+    public void deleteMessageById(Long id, String username) {
+        Optional<UserEntity> sender = userService.getUserEntityByUsername(username);
+        Optional<MessageEntity> message = repository.findById(id);
+
+        if (sender.isEmpty())
+            throw new RuntimeException("Sender does not exist");
+
+        if (message.isEmpty())
+            throw new RuntimeException("Message not found");
+
+        if (sender.get().getRole().equals("admin") || sender.get().getUsername().equals(message.get().getSender().getUsername()))
+            repository.deleteById(id);
+        else
+            throw new RuntimeException("Sender does not have required permissions");
+    }
 }

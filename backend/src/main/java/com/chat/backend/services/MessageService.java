@@ -14,4 +14,6 @@ public interface MessageService {
     void deleteByGroupId(Integer groupId);
 
     void changeMessagesUserToDeleted(Integer id);
+
+    void deleteMessageById(Long id, String username);
 }

@@ -5,6 +5,8 @@ import com.chat.backend.security.JwtUtil;
 import com.chat.backend.services.MessageService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +43,19 @@ public class MessageController {
         MessageDto sentMessage = service.sendMessage(messageDto, jwtUtil.extractUsername(token));
         messagingTemplate.convertAndSend("/topic/group." + messageDto.getGroup().getId(), messageDto);
         return sentMessage;
+    }
+
+    @PreAuthorize("hasAnyRole('admin', 'user')")
+    @DeleteMapping(path = "/messages/{id}")
+    public ResponseEntity<String> deleteMessage(@PathVariable Long id, @RequestHeader (name = "Authorization") String token) {
+        token = token.substring(7);
+        String username = jwtUtil.extractUsername(token);
+        try {
+            service.deleteMessageById(id, username);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>("No permissions", HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>("Message deleted", HttpStatus.OK);
     }
 }
