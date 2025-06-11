@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { login, getGroups, getGroupMessages, addUserToGroup, addNewGroup } from "../hooks/fetches"
-import { connectToChat, sendMessageToGroup, disconnectFromChat } from '../hooks/chat';
+import { login, getGroups, getGroupMessages, addUserToGroup, addNewGroup, sendGroupMessage } from "../hooks/fetches"
+import { connectToChat, disconnectFromChat } from '../hooks/chat';
 import "../assets/Chat.css"
 
 function Chat() {
@@ -43,11 +43,13 @@ function Chat() {
     const handleAddUserToGroup = async () => {
         const userToAdd = document.getElementById("search_user_input").value;
         await addUserToGroup(selectedContact.id, userToAdd);
+        document.getElementById("search_user_input").value = "";
     }
 
     const handleAddNewGroup = async () => {
         const userToAdd = document.getElementById("search_user_input").value;
         await addNewGroup("Czat z: " + userToAdd, userToAdd);
+        document.getElementById("search_user_input").value = "";
         window.location.reload();
     }
 
@@ -60,9 +62,7 @@ function Chat() {
 
         disconnectFromChat();
 
-        connectToChat(selectedContact.id, (msg) => {
-            setMessages((prev) => [...prev, msg]);
-        });
+        connectToChat(selectedContact.id, updateMessages);
 
         return () => {
             disconnectFromChat();
@@ -70,11 +70,10 @@ function Chat() {
     }, [selectedContact]);
 
     const handleSend = () => {
-        const content = document.getElementById('message_input').value;
-        if (content.trim() !== '') {
-            sendMessageToGroup(content, selectedContact.id);
+        if (message.trim() !== '') {
+            sendGroupMessage(selectedContact.id, message);
         }
-        document.getElementById('message_input').value = "";
+        setMessage("");
     };
 
     return (
