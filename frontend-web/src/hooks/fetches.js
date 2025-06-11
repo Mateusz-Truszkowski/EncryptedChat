@@ -49,7 +49,7 @@ export async function getGroups() {
 
 export async function getGroupMessages(groupId) {
     try {
-        const response = await fetch(`http://localhost:8080/messages/${groupId}`, {
+        const response = await fetch(`http://localhost:8080/messages/${groupId}?size=100`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
