@@ -26,9 +26,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto user) {
+    public UserDto createUser(UserDto user, String sender) {
+        Optional<UserDto> senderDto = getUserByUsername(sender);
+
         UserEntity userEntity = mapper.mapFrom(user);
         userEntity.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (senderDto.isEmpty()) {
+            userEntity.setRole("user");
+        }
+        else if (senderDto.get().getRole().equals("user")) {
+            userEntity.setRole("user");
+        }
+
         return mapper.mapTo(repository.save(userEntity));
     }
 
