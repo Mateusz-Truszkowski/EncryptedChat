@@ -4,21 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.SearchView
-import android.widget.Spinner
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.messengerapp.data.api.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,6 +22,7 @@ import java.util.Locale
 class ChatListActivity : AppCompatActivity() {
     private lateinit var newChat : Button
     private lateinit var logout : Button
+    private lateinit var groupRecyclerView: RecyclerView
 
     fun showSearchDialog() {
         // Tworzenie layoutu dla dialogu
@@ -113,6 +108,9 @@ class ChatListActivity : AppCompatActivity() {
 
         newChat = findViewById(R.id.newChat_btn)
         logout = findViewById(R.id.logout_btn)
+        groupRecyclerView = findViewById(R.id.chat_list)
+
+        groupRecyclerView.layoutManager = LinearLayoutManager(this)
 
         newChat.setOnClickListener {
             showSearchDialog()
@@ -120,12 +118,31 @@ class ChatListActivity : AppCompatActivity() {
 
         logout.setOnClickListener {
             val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
-            val editor = sharedPref.edit()
-            editor.remove("auth_token")
-            editor.apply()
+            sharedPref.edit().remove("auth_token").apply()
+            startActivity(Intent(this, MainActivity::class.java))
+        }
 
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+        fetchGroups()
+    }
+
+    private fun fetchGroups() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val token = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", null)
+                val bearerToken = "Bearer $token"
+
+                val response = RetrofitClient.apiService.getGroups(bearerToken)
+                withContext(Dispatchers.Main) {
+                    groupRecyclerView.adapter = GroupAdapter(response) { group ->
+                        val intent = Intent(this@ChatListActivity, ChatActivity::class.java)
+                        intent.putExtra("group_id", group.id)
+                        intent.putExtra("group_name", group.name)
+                        startActivity(intent)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("API ERROR", "Failed to fetch groups: ${e.message}")
+            }
         }
     }
 }

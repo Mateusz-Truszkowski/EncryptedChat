@@ -4,15 +4,18 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.messengerapp.data.model.Message
 
-class MessageAdapter(private val messages: List<MessageDTO>, private val currentUserId: Int) :
+class MessageAdapter(private val messages: List<Message>, private val currentUserUsername: String?) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val VIEW_TYPE_SENT = 1
     private val VIEW_TYPE_RECEIVED = 2
 
     override fun getItemViewType(position: Int): Int {
-        return if (messages[position].sender_id == currentUserId) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
+        if (messages[position].sender == null)
+            return VIEW_TYPE_RECEIVED
+        return if (messages[position].sender?.username == currentUserUsername) VIEW_TYPE_SENT else VIEW_TYPE_RECEIVED
     }
 
     // Zmieniamy typ ViewHoldera, by przechowywał również odwołanie do TextView
@@ -46,8 +49,8 @@ class MessageAdapter(private val messages: List<MessageDTO>, private val current
     class SentMessageViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
         private val messageTextView: TextView = itemView.findViewById(R.id.message_text_sent)
 
-        fun bind(message: MessageDTO) {
-            messageTextView.text = message.message
+        fun bind(message: Message) {
+            messageTextView.text = message.content
         }
     }
 
@@ -55,8 +58,8 @@ class MessageAdapter(private val messages: List<MessageDTO>, private val current
     class ReceivedMessageViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
         private val messageTextView: TextView = itemView.findViewById(R.id.message_text_received)
 
-        fun bind(message: MessageDTO) {
-            messageTextView.text = message.message
+        fun bind(message: Message) {
+            messageTextView.text = message.content
         }
     }
 }

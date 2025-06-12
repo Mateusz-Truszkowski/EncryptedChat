@@ -5,10 +5,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.messengerapp.data.api.RetrofitClient
+import com.example.messengerapp.data.model.UserLogin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,7 +52,8 @@ class MainActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val tokenReceived = RetrofitClient.apiService.loginUser(userLogin)
-                    editor.putString("auth_token", tokenReceived)
+                    editor.putString("auth_token", tokenReceived.token)
+                    editor.putString("username", username)
                     editor.apply()
                     Log.i("API SUCCESS", "Logged in as: $tokenReceived")
                     val intent = Intent(this@MainActivity, ChatListActivity::class.java)

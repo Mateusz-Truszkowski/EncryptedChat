@@ -6,6 +6,9 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import com.example.messengerapp.data.api.RetrofitClient
+import com.example.messengerapp.data.model.User
+import com.example.messengerapp.data.model.UserLogin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,12 +43,11 @@ class RegisterActivity : AppCompatActivity() {
             val editor = sharedPref.edit()
 
             val newUser = User(
-                id = 69,
+                id = 0,
                 username = username,
                 password = password,
-                first_name = firstName,
-                last_name = lastName,
-                email = email
+                role = "user",
+                last_activity = null
             )
 
             val userLogin = UserLogin(
@@ -59,7 +61,7 @@ class RegisterActivity : AppCompatActivity() {
                     Log.i("API SUCCESS", "User created: $response")
 
                     val token = RetrofitClient.apiService.loginUser(userLogin)
-                    editor.putString("auth_token", token)
+                    editor.putString("auth_token", token.token)
                     editor.apply()
                     Log.i("API SUCCESS", "Logged in as: $token")
                     val intent = Intent(this@RegisterActivity, ChatListActivity::class.java)

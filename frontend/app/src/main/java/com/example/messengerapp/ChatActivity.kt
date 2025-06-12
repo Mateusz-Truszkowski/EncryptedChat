@@ -13,6 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.content.Intent
+import com.example.messengerapp.data.api.RetrofitClient
+import com.example.messengerapp.data.model.Group
+import com.example.messengerapp.data.model.Message
 
 class ChatActivity : AppCompatActivity() {
     private lateinit var sendBtn : Button
@@ -23,15 +26,22 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        val groupId = intent.getIntExtra("group_id", -1)
+        val groupName = intent.getStringExtra("group_name")
+        val token = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", null)
+        val bearerToken = "Bearer $token"
+
         val recyclerView = findViewById<RecyclerView>(R.id.message_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val messages = RetrofitClient.apiService.getMessages()
+                val messages = RetrofitClient.apiService.getMessages(bearerToken, groupId)
+
                 withContext(Dispatchers.Main) {
                     // Ustawienie wiadomości w adapterze
-                    val adapter = MessageAdapter(messages, 15)
+                    val username = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("username", null)
+                    val adapter = MessageAdapter(messages.content, username)
                     recyclerView.adapter = adapter
                 }
             } catch (e: Exception) {
@@ -41,34 +51,32 @@ class ChatActivity : AppCompatActivity() {
 
         val chatTitle = findViewById<TextView>(R.id.chat_title)
 
-        val username = intent.getStringExtra("username") ?: getString(R.string.usernameChat)
-        chatTitle.text = username
-
-        val receiverId = intent.getIntExtra("receiverId", -1)
-
-        if(receiverId == -1) {
-            throw RuntimeException("What happened?")
-        }
+        chatTitle.text = groupName
 
         sendBtn = findViewById(R.id.send_button)
 
         sendBtn.setOnClickListener {
             messageBody = findViewById<EditText?>(R.id.message_input).text.toString()
 
-            val msg = Message (
-                id = 69,
-                sender_id = 15,
-                receiver_id = receiverId,
-                message = messageBody,
-                key = "Test",
-                status = "Sent"
+            val group = Group(
+                id = groupId,
+                name = ""
+            )
+            val msg = Message(
+                id = null,
+                group = group,
+                sender = null,
+                content = messageBody,
+                sent_at = null,
+                attachment = null,
+                status = null
             )
 
             findViewById<EditText>(R.id.message_input).text.clear()
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val message = RetrofitClient.apiService.sendMessage(msg)
+                    val message = RetrofitClient.apiService.sendMessage(bearerToken, msg)
                     Log.i("API SUCCESS", "Sent message: $message")
                 } catch (e: Exception) {
                     Log.e("API ERROR", "Failed to log in: ${e.message}")
