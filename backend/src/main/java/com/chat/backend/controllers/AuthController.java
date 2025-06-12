@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 public class AuthController {
 
@@ -27,15 +29,15 @@ public class AuthController {
     }
 
     @PostMapping(path = "/auth")
-    public ResponseEntity<String> authorize(@RequestBody Credentials credentials) {
+    public ResponseEntity<Map<String, String>> authorize(@RequestBody Credentials credentials) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword()));
         }
         catch (BadCredentialsException e) {
-            return new ResponseEntity<>("Bad login credentials", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Map.of("error", "Bad login credentials"), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userDetailsService.loadUserByUsername(credentials.getUsername());
-        return new ResponseEntity<>(jwtUtil.generateToken(userDetails), HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("token", jwtUtil.generateToken(userDetails)), HttpStatus.OK);
     }
 
     @Data
