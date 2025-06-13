@@ -86,4 +86,9 @@ public class MessageServiceImpl implements MessageService {
         else
             throw new RuntimeException("Sender does not have required permissions");
     }
+
+    @Override
+    public Optional<MessageDto> getMessageByAttachment(String filename) {
+        return repository.findByAttachment(filename).map(mapper::mapTo);
+    }
 }

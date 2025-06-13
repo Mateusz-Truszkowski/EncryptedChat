@@ -113,4 +113,14 @@ public class GroupServiceImpl implements GroupService {
         repository.deleteById(groupId);
         return true;
     }
+
+    @Override
+    public boolean isUserInGroup(UserDto user, GroupEntity group) {
+        Optional<GroupUserEntity> groupUserEntities = groupUserRepository.findAllByUserAndGroupId(user.getId(), group.getId());
+
+        if (groupUserEntities.isEmpty())
+            return false;
+        else
+            return true;
+    }
 }
