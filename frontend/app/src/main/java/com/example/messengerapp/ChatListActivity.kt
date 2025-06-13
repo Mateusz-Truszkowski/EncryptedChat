@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.messengerapp.data.api.RetrofitClient
+import com.example.messengerapp.data.model.Group
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,70 +26,67 @@ class ChatListActivity : AppCompatActivity() {
     private lateinit var groupRecyclerView: RecyclerView
 
     fun showSearchDialog() {
-        // Tworzenie layoutu dla dialogu
         val searchView = SearchView(this).apply {
-            queryHint = "Wpisz numer użytkownika"  // Podpowiedź w polu wyszukiwania
-
-            // Uzyskiwanie dostępu do EditText w SearchView
-            val searchEditText = this.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-            if (searchEditText != null) {
-                searchEditText.inputType = InputType.TYPE_CLASS_NUMBER // Ustawienie inputType na liczby
-            } else {
-                Log.e("Search", "EditText w SearchView jest null!")
-            }
+            queryHint = "Wpisz nazwę użytkownika"
+            findViewById<EditText>(androidx.appcompat.R.id.search_src_text)?.inputType = InputType.TYPE_CLASS_TEXT
         }
 
+        val token = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", null)
+        val bearerToken = "Bearer $token"
+
         val dialog = AlertDialog.Builder(this)
-            .setTitle(getString(R.string.user_search))
-            .setView(searchView) // Ustawiamy SearchView jako widok dialogu
+            .setTitle("Dodaj nowy czat")
+            .setView(searchView)
             .setPositiveButton("Szukaj") { dialog, _ ->
-                val queryString = searchView.query.toString()
-                val userId = queryString.toIntOrNull()
+                val query = searchView.query.toString().trim()
 
-                // Jeśli konwersja się powiedzie, wykonaj zapytanie do API
-                if (userId != null) {
-                    Log.i("Search", "Searching for: $userId")
-
-                    // Uruchamiamy zapytanie w tle
+                if (query.isNotBlank()) {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            // Wysyłamy zapytanie do API, aby pobrać dane użytkownika
-                            val user = userId?.let { RetrofitClient.apiService.getUser(it) }
-                            if (user != null) {
-                                Log.i("API SUCCESS", "Found user: ${user.username}")
+                            val users = RetrofitClient.apiService.getAllUsers(bearerToken)
+                            val userToAdd = users.find { it.username.equals(query, ignoreCase = true) }
 
-                                dialog.dismiss()
-                                // Wracamy na główny wątek, aby zaktualizować UI
+                            if (userToAdd != null) {
+                                val newGroup = RetrofitClient.apiService.createGroup(bearerToken, Group(null, "Test group"))
+
+                                RetrofitClient.apiService.addUserToGroup(
+                                    newGroup.id!!,
+                                    userToAdd,
+                                    bearerToken
+                                )
+
                                 withContext(Dispatchers.Main) {
                                     val intent = Intent(this@ChatListActivity, ChatActivity::class.java)
-                                    intent.putExtra("username", user.username)
-                                    intent.putExtra("receiverId", user.id)
+                                    intent.putExtra("group_id", newGroup.id)
+                                    intent.putExtra("group_name", "Nowy czat")
                                     startActivity(intent)
                                 }
+
+                                dialog.dismiss()
                             } else {
                                 withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@ChatListActivity, "Użytkownik nie został znaleziony.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@ChatListActivity, "Nie znaleziono użytkownika", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         } catch (e: Exception) {
-                            // Błąd w zapytaniu
                             withContext(Dispatchers.Main) {
-                                Log.e("API ERROR", "Failed to retrieve user: ${e.message}")
-                                Toast.makeText(this@ChatListActivity, getString(R.string.user_doesnt_exist), Toast.LENGTH_SHORT).show()
+                                Log.e("API ERROR", "Błąd: ${e.message}")
+                                Toast.makeText(this@ChatListActivity, "Błąd podczas tworzenia czatu", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
                 } else {
-                    // Jeśli wprowadzone dane nie są liczbą
-                    Toast.makeText(this, getString(R.string.incorrect_user), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Wprowadź nazwę użytkownika", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+            .setNegativeButton("Anuluj") { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
+
         dialog.show()
     }
+
 
     private fun setLocale(localeCode: String) {
         val locale = Locale(localeCode)

@@ -6,6 +6,8 @@ import com.example.messengerapp.data.model.Page
 import com.example.messengerapp.data.model.TokenResponse
 import com.example.messengerapp.data.model.User
 import com.example.messengerapp.data.model.UserLogin
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.http.Body
@@ -31,11 +33,26 @@ interface ApiService {
         @Path("groupId") groupId: Int
     ): Page<Message>
 
-    @GET("/users/{user_id}")
-    suspend fun getUser(@Path("user_id") userId: Int): User
+    @GET("users")
+    suspend fun getAllUsers(
+        @Header("Authorization") authToken: String
+    ): List<User>
 
     @GET("/groups")
     suspend fun getGroups(
         @Header("Authorization") authToken: String
     ): List<Group>
+
+    @POST("groups")
+    suspend fun createGroup(
+        @Header("Authorization") token: String,
+        @Body group: Group
+    ): Group
+
+    @POST("groups/{groupId}/add_user")
+    suspend fun addUserToGroup(
+        @Path("groupId") groupId: Int,
+        @Body user: User,
+        @Header("Authorization") token: String
+    ): Response<ResponseBody>
 }
