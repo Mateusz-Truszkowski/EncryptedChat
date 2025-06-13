@@ -12,10 +12,10 @@ export async function login(username, password) {
       throw new Error('Błędne dane logowania');
     }
 
-    const token = await response.text();
+    const token = await response.json();
 
     if (token) {
-      localStorage.setItem('token', token);
+      localStorage.setItem('token', token.token);
       return { success: true };
     } else {
       throw new Error('Brak tokenu w odpowiedzi');

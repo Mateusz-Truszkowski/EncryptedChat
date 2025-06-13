@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import android.content.Intent
 import com.example.messengerapp.data.api.RetrofitClient
+import com.example.messengerapp.data.api.StompClient
 import com.example.messengerapp.data.model.Group
 import com.example.messengerapp.data.model.Message
 
@@ -21,6 +22,8 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var sendBtn : Button
     private lateinit var backBtn : Button
     private lateinit var messageBody : String
+    private lateinit var messageAdapter: MessageAdapter
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,10 +31,10 @@ class ChatActivity : AppCompatActivity() {
 
         val groupId = intent.getIntExtra("group_id", -1)
         val groupName = intent.getStringExtra("group_name")
-        val token = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", null)
+        val token = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", "")
         val bearerToken = "Bearer $token"
 
-        val recyclerView = findViewById<RecyclerView>(R.id.message_list)
+        recyclerView = findViewById<RecyclerView>(R.id.message_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -41,13 +44,31 @@ class ChatActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     // Ustawienie wiadomości w adapterze
                     val username = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("username", null)
-                    val adapter = MessageAdapter(messages.content, username)
-                    recyclerView.adapter = adapter
+                    messageAdapter = MessageAdapter(messages.content, username)
+                    recyclerView.adapter = messageAdapter
                 }
             } catch (e: Exception) {
                 Log.e("API ERROR", "Failed to fetch messages: ${e.message}")
             }
         }
+
+        val client = StompClient(groupId, bearerToken.substring(7)) { payload ->
+            Log.d("WS", "Odebrano wiadomość: $payload")
+            runOnUiThread {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val messages = RetrofitClient.apiService.getMessages(bearerToken, groupId)
+                        withContext(Dispatchers.Main) {
+                            messageAdapter.updateMessages(messages.content)
+                            recyclerView.scrollToPosition(messages.content.size - 1)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("API ERROR", "Failed to fetch messages: ${e.message}")
+                    }
+                }
+            }
+        }
+        client.connect()
 
         val chatTitle = findViewById<TextView>(R.id.chat_title)
 
@@ -82,7 +103,6 @@ class ChatActivity : AppCompatActivity() {
                     Log.e("API ERROR", "Failed to log in: ${e.message}")
                 }
             }
-            recreate()
         }
 
         backBtn = findViewById(R.id.back_button)
