@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        RetrofitClient.init(this)
 
         // Ustaw język przed załadowaniem layoutu
         val savedLang = sharedPref.getString("app_language", null)

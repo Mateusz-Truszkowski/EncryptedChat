@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-06-14T15:30:58.923182500Z">
+        <DropdownSelection timestamp="2025-06-14T18:56:53.318766900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Toja\.android\avd\Pixel_9_Pro_XL.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Toja\.android\avd\Medium_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
