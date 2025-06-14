@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -40,6 +41,21 @@ public class UserController {
         }
 
         return service.createUser(user, username);
+    }
+
+    @GetMapping(path = "/users/{username}")
+    public ResponseEntity<UserDto> getUser(
+            @PathVariable("username") String username,
+            @RequestHeader(name = "Authorization", required = false) String token) {
+
+        if (token != null && token.startsWith("Bearer ")) {
+            String jwt = token.substring(7);
+        }
+
+        Optional<UserDto> foundUser = service.getUserByUsername(username);
+
+        return foundUser.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PreAuthorize("hasAnyRole('admin', 'user')")
