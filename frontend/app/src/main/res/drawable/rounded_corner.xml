@@ -6,7 +6,7 @@
 
     <stroke
         android:width="2dp"
-        android:color="@color/white" />
+        android:color="@color/persistent_white" />
 
     <!-- UWAGA: brak solid (czyli brak tła) -->
 

@@ -43,7 +43,7 @@ class RegisterActivity : AppCompatActivity() {
             val editor = sharedPref.edit()
 
             val newUser = User(
-                id = 0,
+                id = null,
                 username = username,
                 password = password,
                 role = "user",

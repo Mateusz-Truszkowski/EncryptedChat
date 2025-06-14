@@ -12,5 +12,18 @@
         android:padding="8dp"
         android:textColor="#fff"
         android:layout_marginTop="10dp"
-        android:text="Wiadomość" />
+        android:text="@string/message_text" />
+
+    <TextView
+        android:id="@+id/play_button_sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/play_audio"
+        android:layout_marginTop="4dp"
+        android:visibility="gone"
+        android:padding="10dp"
+        android:background="@drawable/message_bubble_sent"
+        android:textColor="@color/persistent_white"
+        android:textStyle="bold"
+        android:clickable="true" />
 </LinearLayout>

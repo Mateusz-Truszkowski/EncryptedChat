@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -19,7 +19,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:text="@string/back"
-            android:textColor="@android:color/white"
+            android:textColor="@color/persistent_white"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/rounded_corner"
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/usernameChat"
-            android:textColor="@android:color/white"
+            android:textColor="@color/persistent_white"
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -54,14 +54,37 @@
         android:padding="8dp"
         android:gravity="center_vertical">
 
+        <!-- 🔊 Ikona mikrofonu -->
+
+        <ImageButton
+            android:id="@+id/voice_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_mic_record" />
+
+        <ImageButton
+            android:id="@+id/mic_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:src="@android:drawable/ic_btn_speak_now"
+            android:layout_marginEnd="8dp" />
+
         <EditText
             android:id="@+id/message_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:hint="@string/type_message"
+            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/black"
             android:background="@android:drawable/editbox_background"
             android:padding="10dp"
+            android:imeOptions="actionSend"
+            android:inputType="text"
+            android:singleLine="true"
             android:maxLines="4" />
 
         <Button
