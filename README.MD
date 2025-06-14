@@ -93,14 +93,12 @@ Returns data of the specified user.
 
 **Response:**
 ```json
-[
-    {
-        "id": 1,
-        "username": "admin",
-        "role": "admin",
-        "last_activity": null
-    }
-]
+{
+    "id": 1, 
+    "username": "admin",
+    "role": "admin",
+    "last_activity": null
+}
 ```
 
 ### `POST /users`
