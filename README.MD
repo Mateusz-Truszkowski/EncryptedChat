@@ -88,6 +88,21 @@ Returns a list of all users.
 ]
 ```
 
+### `GET /users{username}`
+Returns data of the specified user.
+
+**Response:**
+```json
+[
+    {
+        "id": 1,
+        "username": "admin",
+        "role": "admin",
+        "last_activity": null
+    }
+]
+```
+
 ### `POST /users`
 Create a new user.  
 If called with an admin token, user role can be assigned, otherwise user role is assigned by default.
