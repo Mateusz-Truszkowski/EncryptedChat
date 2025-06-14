@@ -1,4 +1,9 @@
 <resources>
+    <string name="switch_lang_btn">Zmień język</string>
+    <string name="dark_mode">Tryb ciemny</string>
+    <string name="light_mode">Tryb jasny</string>
+    <string name="switch_theme">Zmień motyw</string>
+    <string name="switch_language">English</string> <!-- dla pl -->
     <string name="app_name">MessengerApp</string>
     <string name="username">Nazwa użytkownika</string>
     <string name="password">Hasło</string>
@@ -19,4 +24,13 @@
     <string name="cancel">Anuluj</string>
     <string name="back"><![CDATA[<]]></string>
     <string name="logout">Wyloguj</string>
+    <string name="message_text">Wiadomość</string>
+    <string name="play_audio">▶️ Odtwórz głosówkę</string>
+    <string name="change_password">Zmień hasło</string>
+    <string name="role">Rola</string>
+    <string name="delete_account">Usuń konto</string>
+    <string name="username_format">Nazwa użytkownika: %1$s</string>
+    <string name="role_format">Rola: %1$s</string>
+    <string name="account_deleted">Konto usunięte!!!</string>
+    <string name="username2">Nazwa użytkwonika: </string>
 </resources>

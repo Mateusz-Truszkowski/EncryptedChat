@@ -6,6 +6,7 @@ import android.text.InputType
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -32,6 +33,7 @@ class ChatListActivity : AppCompatActivity() {
         }
 
         val token = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("auth_token", null)
+        val username = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("username", null)
         val bearerToken = "Bearer $token"
 
         val dialog = AlertDialog.Builder(this)
@@ -47,7 +49,7 @@ class ChatListActivity : AppCompatActivity() {
                             val userToAdd = users.find { it.username.equals(query, ignoreCase = true) }
 
                             if (userToAdd != null) {
-                                val newGroup = RetrofitClient.apiService.createGroup(bearerToken, Group(null, "Test group"))
+                                val newGroup = RetrofitClient.apiService.createGroup(bearerToken, Group(null, userToAdd.username + " / " + username))
 
                                 RetrofitClient.apiService.addUserToGroup(
                                     newGroup.id!!,
@@ -113,6 +115,13 @@ class ChatListActivity : AppCompatActivity() {
         newChat.setOnClickListener {
             showSearchDialog()
         }
+
+        val accountIcon: ImageView = findViewById(R.id.account_settings_icon)
+        accountIcon.setOnClickListener {
+            val intent = Intent(this, AccountViewActivity::class.java)
+            startActivity(intent)
+        }
+
 
         logout.setOnClickListener {
             val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)

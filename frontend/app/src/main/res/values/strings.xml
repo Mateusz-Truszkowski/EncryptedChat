@@ -1,4 +1,9 @@
 <resources>
+    <string name="switch_lang_btn">Switch language</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="light_mode">Light mode</string>
+    <string name="switch_theme">Switch theme</string>
+    <string name="switch_language">Polski</string> <!-- dla en -->
     <string name="english" translatable="false">English</string>
     <string name="polski" translatable="false">Polski</string>
     <string name="app_name">MessengerApp</string>
@@ -21,4 +26,13 @@
     <string name="cancel">Cancel</string>
     <string name="back"><![CDATA[<]]></string>
     <string name="logout">Logout</string>
+    <string name="message_text">Message</string>
+    <string name="play_audio">▶️ Play audio</string>
+    <string name="change_password">Change Password</string>
+    <string name="role">Role cipa: </string>
+    <string name="delete_account">Delete Account</string>
+    <string name="username_format">Username: %1$s</string>
+    <string name="role_format">Role: %1$s</string>
+    <string name="account_deleted">Account deleted!!!</string>
+    <string name="username2">Username: </string>
 </resources>

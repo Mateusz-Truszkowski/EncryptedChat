@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FFFFFF</color> <!-- ciemne tło -->
+    <color name="white">#000000</color> <!-- jasny tekst -->
+    <color name="persistent_white">#FFFFFF</color> <!-- jasny tekst -->
+    <color name="launcher_foreground_start">#0D1B2A</color> <!-- możesz zostawić -->
+    <color name="launcher_foreground_end">#1B263B</color>
+
+    <color name="microphone_dot">#FF4A4A</color> <!-- bardziej widoczny na ciemnym tle -->
+    <color name="bubble_received">#333333</color> <!-- ciemna szarość -->
+    <color name="bubble_sent">#1E88E5</color> <!-- jaśniejszy niebieski -->
+    <color name="darker_gray">#555555</color>
+    <color name="text_color">#FFFFFF</color> <!-- białe teksty -->
+</resources>

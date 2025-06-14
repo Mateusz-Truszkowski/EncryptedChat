@@ -17,8 +17,8 @@
                 android:startY="0"
                 android:endX="24"
                 android:endY="24"
-                android:startColor="#054BB3"
-                android:endColor="#00D9FF"/>
+                android:startColor="@color/launcher_foreground_start"
+                android:endColor="@color/launcher_foreground_end"/>
         </aapt:attr>
     </path>
 
