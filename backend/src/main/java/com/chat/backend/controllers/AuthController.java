@@ -1,6 +1,8 @@
 package com.chat.backend.controllers;
 
 import com.chat.backend.security.JwtUtil;
+import com.chat.backend.services.UserService;
+import com.chat.backend.services.impl.MyFirebaseMessagingService;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +22,15 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final MyFirebaseMessagingService fcmService;
     private final JwtUtil jwtUtil;
 
-    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService,
+                          JwtUtil jwtUtil, MyFirebaseMessagingService fcmService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
+        this.fcmService = fcmService;
     }
 
     @PostMapping(path = "/auth")
@@ -37,6 +42,7 @@ public class AuthController {
             return new ResponseEntity<>(Map.of("error", "Bad login credentials"), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userDetailsService.loadUserByUsername(credentials.getUsername());
+        fcmService.setToken(credentials.getUsername(), credentials.getFcmToken());
         return new ResponseEntity<>(Map.of("token", jwtUtil.generateToken(userDetails)), HttpStatus.OK);
     }
 
@@ -44,5 +50,6 @@ public class AuthController {
     public static class Credentials {
         String username;
         String password;
+        String fcmToken;
     }
 }

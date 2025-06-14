@@ -3,6 +3,7 @@ package com.chat.backend.controllers;
 import com.chat.backend.domain.dto.MessageDto;
 import com.chat.backend.security.JwtUtil;
 import com.chat.backend.services.MessageService;
+import com.chat.backend.services.impl.MyFirebaseMessagingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -16,12 +17,15 @@ public class MessageController {
 
     private final MessageService service;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MyFirebaseMessagingService fcmService;
     private final JwtUtil jwtUtil;
 
-    public MessageController(MessageService service, SimpMessagingTemplate messagingTemplate, JwtUtil jwtUtil) {
+    public MessageController(MessageService service, SimpMessagingTemplate messagingTemplate,
+                             JwtUtil jwtUtil, MyFirebaseMessagingService fcmService) {
         this.service = service;
         this.messagingTemplate = messagingTemplate;
         this.jwtUtil = jwtUtil;
+        this.fcmService = fcmService;
     }
 
     @PreAuthorize("hasRole('admin')")
@@ -40,8 +44,10 @@ public class MessageController {
     @PostMapping(path = "/messages")
     public MessageDto sendMessage(@RequestBody MessageDto messageDto, @RequestHeader (name = "Authorization") String token) {
         token = token.substring(7);
-        MessageDto sentMessage = service.sendMessage(messageDto, jwtUtil.extractUsername(token));
-        messagingTemplate.convertAndSend("/topic/group." + messageDto.getGroup().getId(), messageDto);
+        String username = jwtUtil.extractUsername(token);
+        MessageDto sentMessage = service.sendMessage(messageDto, username);
+        messagingTemplate.convertAndSend("/topic/group." + messageDto.getGroup().getId(), sentMessage);
+        fcmService.sendNotification(sentMessage.getGroup().getId(), username, sentMessage.getSender().getUsername(), sentMessage.getContent());
         return sentMessage;
     }
 

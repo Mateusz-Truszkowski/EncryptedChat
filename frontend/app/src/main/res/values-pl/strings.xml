@@ -33,4 +33,5 @@
     <string name="role_format">Rola: %1$s</string>
     <string name="account_deleted">Konto usunięte!!!</string>
     <string name="username2">Nazwa użytkwonika: </string>
+    <string name="notification_title">Nowa wiadomość od: </string>
 </resources>

@@ -38,7 +38,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         Path uploadDir = Paths.get(System.getProperty("user.home"), "chatapp_uploads");
 
         if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir); // <- UTWÓRZ KATALOG JEŚLI GO NIE MA
+            Files.createDirectories(uploadDir);
         }
 
         Path path = uploadDir.resolve(filename);

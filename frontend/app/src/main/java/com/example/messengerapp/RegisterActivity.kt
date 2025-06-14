@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.messengerapp.data.api.RetrofitClient
 import com.example.messengerapp.data.model.User
 import com.example.messengerapp.data.model.UserLogin
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -50,13 +52,14 @@ class RegisterActivity : AppCompatActivity() {
                 last_activity = null
             )
 
-            val userLogin = UserLogin(
-                username = username,
-                password = password
-            )
-
             CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    val fcmToken = FirebaseMessaging.getInstance().token.await()
+                    val userLogin = UserLogin(
+                        username = username,
+                        password = password,
+                        fcmToken = fcmToken
+                    )
                     val response = RetrofitClient.apiService.createUser(newUser)
                     Log.i("API SUCCESS", "User created: $response")
 

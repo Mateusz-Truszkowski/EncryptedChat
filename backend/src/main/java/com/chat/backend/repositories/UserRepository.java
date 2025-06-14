@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<UserEntity, Integer> {
@@ -14,4 +15,7 @@ public interface UserRepository extends CrudRepository<UserEntity, Integer> {
     boolean existsByRolesContaining(@Param("role") String role);
 
     boolean existsByUsername(String username);
+
+    @Query("SELECT gu.user FROM GroupUserEntity gu WHERE gu.group.id = :groupId")
+    List<UserEntity> findAllUsersByGroupId(@Param("groupId") Integer groupId);
 }

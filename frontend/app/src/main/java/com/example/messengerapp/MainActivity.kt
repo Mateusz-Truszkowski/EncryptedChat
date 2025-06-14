@@ -1,17 +1,24 @@
 package com.example.messengerapp
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.messengerapp.data.api.RetrofitClient
 import com.example.messengerapp.data.model.UserLogin
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +55,18 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ChatListActivity::class.java))
             finish()
             return
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1001
+                )
+            }
         }
 
         setContentView(R.layout.activity_main)
@@ -91,10 +110,10 @@ class MainActivity : AppCompatActivity() {
             val password = passwordInput.text.toString()
             val editor = sharedPref.edit()
 
-            val userLogin = UserLogin(username = username, password = password)
-
             CoroutineScope(Dispatchers.IO).launch {
                 try {
+                    val fcmToken = FirebaseMessaging.getInstance().token.await()
+                    val userLogin = UserLogin(username = username, password = password, fcmToken = fcmToken)
                     val tokenReceived = RetrofitClient.apiService.loginUser(userLogin)
                     editor.putString("auth_token", tokenReceived.token)
                     editor.putString("username", username)
@@ -127,6 +146,22 @@ class MainActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
             finish()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 1001) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("PERMISSION", "POST_NOTIFICATIONS granted")
+            } else {
+                Log.w("PERMISSION", "POST_NOTIFICATIONS denied – notifications may not work")
+            }
         }
     }
 }
