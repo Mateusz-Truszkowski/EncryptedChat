@@ -1,5 +1,6 @@
 package com.example.messengerapp
 
+import StompClient
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -16,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.messengerapp.data.api.RetrofitClient
-import com.example.messengerapp.data.api.StompClient
 import com.example.messengerapp.data.model.Group
 import com.example.messengerapp.data.model.Message
 import kotlinx.coroutines.*
@@ -102,7 +102,7 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
-        client.connect()
+        client.connect(this)
 
         // Rejestracja activity result launchera
         speechRecognizerLauncher = registerForActivityResult(

@@ -1,27 +1,47 @@
-package com.example.messengerapp.data.api
-
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import java.security.KeyStore
+import javax.net.ssl.KeyManagerFactory
 
 class StompClient(val groupId: Int, val token: String, val onMessageReceived: (String) -> Unit) {
     private lateinit var client: WebSocketClient
 
-    fun connect() {
-        val url = URI("ws://10.0.2.2:8080/ws/websocket?token=$token")
+    fun connect(context: Context) {
+        val url = URI("wss://10.0.2.2:8443/ws/websocket?token=$token")
+
+        val password = "123456".toCharArray()
+
+        val trustStore = KeyStore.getInstance("PKCS12")
+        context.assets.open("truststore.p12").use { input ->
+            trustStore.load(input, password)
+        }
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(trustStore)
+
+        val keyStore = KeyStore.getInstance("PKCS12")
+        context.assets.open("client.p12").use { input ->
+            keyStore.load(input, "1234".toCharArray())
+        }
+        val keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+        keyManagerFactory.init(keyStore, "1234".toCharArray())
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(keyManagerFactory.keyManagers, trustManagerFactory.trustManagers, null)
 
         client = object : WebSocketClient(url) {
             override fun onOpen(handshakedata: ServerHandshake?) {
                 Log.d("STOMP", "Połączono")
 
-                // STOMP CONNECT
-                val connectFrame = "CONNECT\naccept-version:1.2\n\n\u0000"
+                val connectFrame = "CONNECT\naccept-version:1.2\nhost:localhost\n\n\u0000"
                 send(connectFrame)
 
-                // SUBSCRIBE (po chwili, żeby backend zdążył odpowiedzieć)
                 Handler(Looper.getMainLooper()).postDelayed({
                     val subscribeFrame = "SUBSCRIBE\nid:sub-0\ndestination:/topic/group.$groupId\n\n\u0000"
                     send(subscribeFrame)
@@ -44,6 +64,8 @@ class StompClient(val groupId: Int, val token: String, val onMessageReceived: (S
                 Log.e("STOMP", "Błąd WebSocket", ex)
             }
         }
+
+        client.setSocket(sslContext.socketFactory.createSocket())
 
         client.connect()
     }
