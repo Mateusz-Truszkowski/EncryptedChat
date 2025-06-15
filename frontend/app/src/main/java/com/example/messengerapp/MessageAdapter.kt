@@ -9,12 +9,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.messengerapp.data.api.ApiService
 import com.example.messengerapp.data.model.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.security.KeyStore
+import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 class MessageAdapter(
     private var messages: List<Message>,
@@ -59,42 +68,77 @@ class MessageAdapter(
         }
     }
 
+    fun createRetrofit(context: Context): Retrofit {
+        val keyStore = KeyStore.getInstance("PKCS12")
+        context.resources.openRawResource(R.raw.client).use { fis ->
+            keyStore.load(fis, "1234".toCharArray())
+        }
+        val kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+        kmf.init(keyStore, "1234".toCharArray())
+
+        val trustStore = KeyStore.getInstance("PKCS12")
+        context.resources.openRawResource(R.raw.truststore).use { fis ->
+            trustStore.load(fis, "123456".toCharArray())
+        }
+        val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        tmf.init(trustStore)
+
+        val trustManager = tmf.trustManagers[0] as X509TrustManager
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(kmf.keyManagers, arrayOf(trustManager), null)
+
+        val client = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustManager)
+            .hostnameVerifier { _, _ -> true }
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl("https://10.0.2.2:8443/")
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+
+
     private fun playAudio(context: Context, filename: String) {
         val token = getAuthToken(context)
-        val url = "http://10.0.2.2:8080/attachments/$filename"
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // 1. Otwórz połączenie
-                val connection = java.net.URL(url).openConnection() as java.net.HttpURLConnection
-                connection.setRequestProperty("Authorization", "Bearer $token")
-                connection.connect()
+                val retrofit = createRetrofit(context)
+                val api = retrofit.create(ApiService::class.java)
+                val response = api.downloadAttachment("Bearer $token", filename)
 
-                // 2. Odczytaj dane i zapisz do pliku tymczasowego
-                val inputStream = connection.inputStream
-                val tempFile = File.createTempFile("voice_", ".3gp", context.cacheDir)
-                tempFile.outputStream().use { output ->
-                    inputStream.copyTo(output)
+                if (response.isSuccessful) {
+                    val inputStream = response.body()?.byteStream()
+                    val tempFile = File.createTempFile("voice_", ".3gp", context.cacheDir)
+                    tempFile.outputStream().use { output -> inputStream?.copyTo(output) }
+
+                    val mediaPlayer = MediaPlayer()
+                    mediaPlayer.setDataSource(tempFile.absolutePath)
+                    mediaPlayer.prepare()
+                    mediaPlayer.start()
+
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Odtwarzanie głosówki...", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Błąd pobierania: ${response.code()}", Toast.LENGTH_LONG).show()
+                    }
                 }
-
-                // 3. Przygotuj i odtwórz plik lokalny
-                val mediaPlayer = MediaPlayer()
-                mediaPlayer.setDataSource(tempFile.absolutePath)
-                mediaPlayer.prepare()
-                mediaPlayer.start()
-
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Odtwarzanie głosówki...", Toast.LENGTH_SHORT).show()
-                }
-
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Błąd odtwarzania: ${e.message}", Toast.LENGTH_SHORT).show()
-                    Log.e("PLAYER", "Error: ${e.message}")
+                    Toast.makeText(context, "Błąd odtwarzania: ${e.message}", Toast.LENGTH_LONG).show()
+                    Log.e("PLAYER", "Error", e)
                 }
             }
         }
     }
+
+
 
     private fun getAuthToken(context: Context): String {
         return context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)

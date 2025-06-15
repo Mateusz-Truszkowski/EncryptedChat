@@ -19,6 +19,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.Part
 import retrofit2.http.Query
+import retrofit2.http.Streaming
 
 interface ApiService {
     @POST("/users")
@@ -82,4 +83,10 @@ interface ApiService {
         @Part file: MultipartBody.Part
     ): Map<String, String>
 
+    @GET("attachments/{filename}")
+    @Streaming
+    suspend fun downloadAttachment(
+        @Header("Authorization") token: String,
+        @Path("filename") filename: String
+    ): Response<ResponseBody>
 }

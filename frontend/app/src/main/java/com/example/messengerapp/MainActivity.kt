@@ -35,13 +35,11 @@ class MainActivity : AppCompatActivity() {
         sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         RetrofitClient.init(this)
 
-        // Ustaw język przed załadowaniem layoutu
         val savedLang = sharedPref.getString("app_language", null)
         if (savedLang != null) {
             setLocale(savedLang, applyNow = false)
         }
 
-        // Ustaw motyw przed załadowaniem widoku
         val isDarkMode = sharedPref.getBoolean("dark_mode", false)
         AppCompatDelegate.setDefaultNightMode(
             if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
@@ -50,7 +48,6 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        // Jeśli użytkownik jest już zalogowany
         val token = sharedPref.getString("auth_token", null)
         if (token != null) {
             startActivity(Intent(this, ChatListActivity::class.java))

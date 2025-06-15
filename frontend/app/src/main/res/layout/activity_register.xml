@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
@@ -22,32 +21,20 @@
             android:src="@drawable/icon_account_circle" />
 
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="32dp"
-            android:hint="@string/email"
-            android:textColor="@color/persistent_white"
-            android:textColorHint="@color/persistent_white"
-            android:textSize="13sp"
-            android:background="@drawable/rounded_corner"
-            android:padding="18dp"
-            android:inputType="textEmailAddress"
-            android:id="@+id/emailRegister_input"/>
-
-        <EditText
+            android:id="@+id/usernameRegister_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="32dp"
             android:hint="@string/username"
             android:textColor="@color/persistent_white"
             android:textColorHint="@color/persistent_white"
             android:textSize="13sp"
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
-            android:inputType="text"
-            android:id="@+id/usernameRegister_input"/>
+            android:inputType="text" />
 
         <EditText
+            android:id="@+id/passwordRegister_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -57,36 +44,10 @@
             android:textSize="13sp"
             android:background="@drawable/rounded_corner"
             android:padding="18dp"
-            android:inputType="textPassword"
-            android:id="@+id/passwordRegister_input"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="@string/first_name"
-            android:textColor="@color/persistent_white"
-            android:textColorHint="@color/persistent_white"
-            android:textSize="13sp"
-            android:background="@drawable/rounded_corner"
-            android:padding="18dp"
-            android:inputType="text"
-            android:id="@+id/firstNameRegister_input"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:hint="@string/last_name"
-            android:textColor="@color/persistent_white"
-            android:textColorHint="@color/persistent_white"
-            android:textSize="13sp"
-            android:background="@drawable/rounded_corner"
-            android:padding="18dp"
-            android:inputType="text"
-            android:id="@+id/lastNameRegister_input"/>
+            android:inputType="textPassword" />
 
         <Button
+            android:id="@+id/registerSubmit_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/register"
@@ -94,7 +55,6 @@
             android:textColor="@color/text_color"
             android:padding="18dp"
             android:layout_marginTop="32dp"
-            android:textSize="20sp"
-            android:id="@+id/registerSubmit_btn" />
+            android:textSize="20sp" />
     </LinearLayout>
 </RelativeLayout>

@@ -50,7 +50,7 @@ object RetrofitClient {
 
             return OkHttpClient.Builder()
                 .sslSocketFactory(sslContext.socketFactory, trustManager)
-                .hostnameVerifier { _, _ -> true } // TYLKO NA TESTY
+                .hostnameVerifier { _, _ -> true }
                 .addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 })

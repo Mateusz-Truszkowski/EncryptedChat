@@ -17,30 +17,21 @@ import kotlinx.coroutines.tasks.await
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var emailInput : EditText
     private lateinit var usernameInput : EditText
     private lateinit var passwordInput : EditText
-    private lateinit var firstNameInput: EditText
-    private lateinit var lastNameInput: EditText
     private lateinit var registerSubmitBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        emailInput = findViewById(R.id.emailRegister_input)
         usernameInput = findViewById(R.id.usernameRegister_input)
         passwordInput = findViewById(R.id.passwordRegister_input)
-        firstNameInput = findViewById(R.id.firstNameRegister_input)
-        lastNameInput = findViewById(R.id.lastNameRegister_input)
         registerSubmitBtn = findViewById(R.id.registerSubmit_btn)
 
         registerSubmitBtn.setOnClickListener {
-            val email = emailInput.text.toString()
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
-            val firstName = firstNameInput.text.toString()
-            val lastName = lastNameInput.text.toString()
             val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
             val editor = sharedPref.edit()
 
@@ -65,6 +56,7 @@ class RegisterActivity : AppCompatActivity() {
 
                     val token = RetrofitClient.apiService.loginUser(userLogin)
                     editor.putString("auth_token", token.token)
+                    editor.putString("username", username)
                     editor.apply()
                     Log.i("API SUCCESS", "Logged in as: $token")
                     val intent = Intent(this@RegisterActivity, ChatListActivity::class.java)
